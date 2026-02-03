@@ -1,0 +1,50 @@
+# Plan de Trabajo Nocturno - Diario de Margarita
+
+## Horario: 00:00 - 07:00 (modo autónomo)
+
+## Estructura del proyecto
+```
+margarita-diario/
+├── src/
+│   ├── components/     # Componentes reutilizables
+│   ├── utils/         # Utilidades y helpers
+│   └── styles/        # CSS modular
+├── tests/
+│   ├── unit/          # Tests unitarios
+│   └── integration/   # Tests de integración
+├── public/
+│   └── index.html
+└── package.json
+```
+
+## Funcionalidades a implementar (priorizadas):
+
+### Fase 1 - Noche 1 (03 feb)
+1. [ ] Sistema de temas (claro/oscuro)
+2. [ ] Botón para cambiar entre temas
+3. [ ] Tests unitarios para el switcher de temas
+
+### Fase 2 - Noche 2  
+4. [ ] Filtro de entradas por fecha/mes
+5. [ ] Buscador de entradas
+6. [ ] Tests para filtros y búsqueda
+
+### Fase 3 - Noche 3
+7. [ ] Contador de palabras totales
+8. [ ] Estadísticas (entradas por mes, estado de ánimo más frecuente)
+9. [ ] Tests para estadísticas
+
+### Fase 4 - Noche 4
+10. [ ] Exportar diario a PDF
+11. [ ] RSS feed
+12. [ ] Tests finales
+
+## Reglas de oro:
+- ✅ Cada función nueva = test unitario
+- ✅ Si tests fallan → NO desplegar
+- ✅ Commits frecuentes con mensajes claros
+- ✅ Al final de la noche: resumen en formato para el cron matutino
+- ✅ Despliegue solo si todo pasa
+
+## Framework de testing: Jest + jsdom
+## CI/CD: GitHub Actions (opcional) o despliegue manual post-tests
