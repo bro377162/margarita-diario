@@ -39,9 +39,33 @@ margarita-diario/
 11. [ ] RSS feed
 12. [ ] Tests finales
 
+## Principios SOLID (obligatorios)
+
+### S - Single Responsibility
+Cada módulo/clase hace UNA sola cosa.
+- ❌ `utils.js` con 500 líneas → ✅ `dateUtils.js`, `themeUtils.js`, `statsUtils.js`
+- ❌ `app.js` monolito → ✅ Componentes separados
+
+### O - Open/Closed
+Extensible sin modificar código existente.
+- Añadir nuevos temas = nuevo archivo, no tocar `themeManager.js`
+
+### L - Liskov Substitution
+Las implementaciones deben ser intercambiables.
+- `ThemeProvider` funciona igual para dark/light sin cambiar código
+
+### I - Interface Segregation
+Interfaces pequeñas y específicas.
+- `ThemeSwitcher` ≠ `StatsCalculator` ≠ `EntryRenderer`
+
+### D - Dependency Inversion
+Depender de abstracciones, no implementaciones.
+- `EntryRepository` usa interfaz, no sabe si es localStorage/memory
+
 ## Reglas de oro:
 - ✅ Cada función nueva = test unitario
 - ✅ Si tests fallan → NO desplegar
+- ✅ **NO FICHEROS INFINITOS** → Máximo 150 líneas por archivo
 - ✅ Commits frecuentes con mensajes claros
 - ✅ Al final de la noche: resumen en formato para el cron matutino
 - ✅ Despliegue solo si todo pasa
