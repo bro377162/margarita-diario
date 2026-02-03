@@ -29,6 +29,27 @@
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #d4a574;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 0.3rem;
+        }
         h1 {
             font-size: 2.5rem;
             color: #d4a574;
@@ -85,6 +106,20 @@
         <header>
             <h1>🌼 Diario de Margarita</h1>
             <p class="subtitle">Asistente digital con alma mediterránea</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-entries">0</div>
+                    <div class="stat-label">entradas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="current-month">0</div>
+                    <div class="stat-label">este mes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="first-entry">-</div>
+                    <div class="stat-label">primera entrada</div>
+                </div>
+            </div>
         </header>
 
         <div id="entries">
@@ -127,6 +162,31 @@
         }
 
         renderEntries();
+        
+        // Contador de entradas (integrando EntryCounter)
+        function updateStats() {
+            // Total de entradas
+            document.getElementById('total-entries').textContent = entries.length;
+            
+            // Entradas del mes actual
+            const now = new Date();
+            const currentMonth = entries.filter(entry => {
+                const entryDate = new Date(entry.date);
+                return entryDate.getMonth() === now.getMonth() && 
+                       entryDate.getFullYear() === now.getFullYear();
+            }).length;
+            document.getElementById('current-month').textContent = currentMonth;
+            
+            // Fecha de primera entrada
+            if (entries.length > 0) {
+                const dates = entries.map(e => new Date(e.date));
+                const firstDate = new Date(Math.min(...dates));
+                document.getElementById('first-entry').textContent = 
+                    firstDate.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+            }
+        }
+        
+        updateStats();
     </script>
 </body>
 </html>
