@@ -21,6 +21,8 @@
             --accent: #d4a574;
             --border: #eee;
             --mood-bg: #fef9e7;
+            --input-bg: white;
+            --input-border: #ddd;
         }
         
         [data-theme="dark"] {
@@ -32,6 +34,8 @@
             --accent: #e94560;
             --border: #2a2a4a;
             --mood-bg: #16213e;
+            --input-bg: #0f3460;
+            --input-border: #2a2a4a;
         }
         
         body {
@@ -48,7 +52,7 @@
         }
         header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             padding: 2rem;
             background: var(--bg-card);
             border-radius: 20px;
@@ -101,6 +105,72 @@
             color: var(--text-secondary);
             font-style: italic;
         }
+        
+        /* Filtros y búsqueda */
+        .filters {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .filter-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: bold;
+        }
+        .filter-select, .search-input {
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            min-width: 120px;
+        }
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+        .search-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .filter-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+        .filter-btn:hover {
+            opacity: 0.9;
+        }
+        .clear-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        .results-info {
+            width: 100%;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        
         .entry {
             background: var(--bg-card);
             padding: 2rem;
@@ -123,6 +193,12 @@
             line-height: 1.8;
             font-size: 1.1rem;
         }
+        .content mark {
+            background: var(--accent);
+            color: white;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+        }
         .mood {
             display: inline-block;
             margin-top: 1rem;
@@ -130,6 +206,12 @@
             background: var(--mood-bg);
             border-radius: 20px;
             font-size: 0.9rem;
+        }
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+            font-style: italic;
         }
         footer {
             text-align: center;
@@ -164,6 +246,40 @@
                 </div>
             </div>
         </header>
+
+        <!-- Filtros y búsqueda -->
+        <div class="filters">
+            <div class="filter-group">
+                <label class="filter-label">Año</label>
+                <select class="filter-select" id="year-filter">
+                    <option value="">Todos</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Mes</label>
+                <select class="filter-select" id="month-filter">
+                    <option value="">Todos</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            <div class="filter-group" style="flex: 1;">
+                <label class="filter-label">Buscar</label>
+                <input type="text" class="search-input" id="search-input" placeholder="Buscar en entradas...">
+            </div>
+            <button class="filter-btn clear-btn" id="clear-filters">Limpiar</button>
+            <div class="results-info" id="results-info"></div>
+        </div>
 
         <div id="entries">
             <!-- Las entradas se añadirán aquí -->
@@ -211,6 +327,102 @@
             }
         }
 
+        // EntryFilter - Filtrar entradas por fecha
+        class EntryFilter {
+            constructor(entries = []) {
+                this.entries = entries;
+            }
+
+            filterByMonth(year, month) {
+                return this.entries.filter(entry => {
+                    const entryDate = new Date(entry.date);
+                    return entryDate.getFullYear() === year && 
+                           entryDate.getMonth() + 1 === month;
+                });
+            }
+
+            filterByYear(year) {
+                return this.entries.filter(entry => {
+                    const entryDate = new Date(entry.date);
+                    return entryDate.getFullYear() === year;
+                });
+            }
+
+            filterByDateRange(startDate, endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                
+                return this.entries.filter(entry => {
+                    const entryDate = new Date(entry.date);
+                    return entryDate >= start && entryDate <= end;
+                });
+            }
+
+            getAvailableYears() {
+                const years = new Set();
+                this.entries.forEach(entry => {
+                    const entryDate = new Date(entry.date);
+                    years.add(entryDate.getFullYear());
+                });
+                return Array.from(years).sort((a, b) => b - a);
+            }
+        }
+
+        // EntrySearch - Buscar en entradas
+        class EntrySearch {
+            constructor(entries = [], options = {}) {
+                this.entries = entries;
+                this.options = {
+                    caseSensitive: options.caseSensitive ?? false,
+                    searchInMood: options.searchInMood ?? true
+                };
+            }
+
+            _normalize(text) {
+                if (this.options.caseSensitive) return text;
+                return text.toLowerCase();
+            }
+
+            search(query) {
+                if (!query || query.trim() === '') return [];
+                
+                const searchTerm = this._normalize(query.trim());
+                
+                return this.entries.filter(entry => {
+                    const contentMatch = this._normalize(entry.content).includes(searchTerm);
+                    
+                    if (this.options.searchInMood && entry.mood) {
+                        const moodMatch = this._normalize(entry.mood).includes(searchTerm);
+                        return contentMatch || moodMatch;
+                    }
+                    
+                    return contentMatch;
+                });
+            }
+
+            searchWithHighlight(query) {
+                if (!query || query.trim() === '') return [];
+                
+                const searchTerm = query.trim();
+                const results = this.search(query);
+                
+                return results.map(entry => {
+                    return {
+                        ...entry,
+                        highlightedContent: this._highlightText(entry.content, searchTerm)
+                    };
+                });
+            }
+
+            _highlightText(text, query) {
+                if (!text || !query) return text;
+                const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const flags = this.options.caseSensitive ? 'g' : 'gi';
+                const regex = new RegExp(`(${escapedQuery})`, flags);
+                return text.replace(regex, '<mark>$1</mark>');
+            }
+        }
+
         const entries = [
             {
                 date: "2026-02-03",
@@ -229,28 +441,103 @@
             }
         ];
 
-        function renderEntries() {
+        // Instancias de filtros y búsqueda
+        const entryFilter = new EntryFilter(entries);
+        const entrySearch = new EntrySearch(entries);
+
+        function renderEntries(entriesToRender, highlightQuery = null) {
             const container = document.getElementById('entries');
-            entries.forEach(entry => {
+            container.innerHTML = '';
+            
+            if (entriesToRender.length === 0) {
+                container.innerHTML = '<div class="no-results">No se encontraron entradas</div>';
+                return;
+            }
+            
+            entriesToRender.forEach(entry => {
                 const div = document.createElement('div');
                 div.className = 'entry';
+                
+                let content = entry.content;
+                if (highlightQuery && entry.highlightedContent) {
+                    content = entry.highlightedContent;
+                } else if (highlightQuery) {
+                    content = entrySearch._highlightText(entry.content, highlightQuery);
+                }
+                
                 div.innerHTML = `
                     <div class="date">${entry.date}</div>
-                    <div class="content">${entry.content}</div>
+                    <div class="content">${content}</div>
                     <div class="mood">${entry.mood}</div>
                 `;
                 container.appendChild(div);
             });
+            
+            // Actualizar info de resultados
+            const infoEl = document.getElementById('results-info');
+            const total = entries.length;
+            const showing = entriesToRender.length;
+            infoEl.textContent = `Mostrando ${showing} de ${total} entradas`;
         }
 
-        renderEntries();
+        function applyFilters() {
+            let result = [...entries];
+            
+            const yearFilter = document.getElementById('year-filter').value;
+            const monthFilter = document.getElementById('month-filter').value;
+            const searchQuery = document.getElementById('search-input').value;
+            
+            // Aplicar filtro de año
+            if (yearFilter) {
+                result = entryFilter.filterByYear(parseInt(yearFilter));
+            }
+            
+            // Aplicar filtro de mes (requiere año)
+            if (monthFilter && yearFilter) {
+                result = entryFilter.filterByMonth(parseInt(yearFilter), parseInt(monthFilter));
+            } else if (monthFilter && !yearFilter) {
+                // Si solo hay mes, filtrar por mes en todas las entradas
+                result = result.filter(entry => {
+                    const entryDate = new Date(entry.date);
+                    return entryDate.getMonth() + 1 === parseInt(monthFilter);
+                });
+            }
+            
+            // Aplicar búsqueda
+            let highlightQuery = null;
+            if (searchQuery.trim()) {
+                const search = new EntrySearch(result);
+                const searchResults = search.searchWithHighlight(searchQuery.trim());
+                result = searchResults;
+                highlightQuery = searchQuery.trim();
+            }
+            
+            renderEntries(result, highlightQuery);
+        }
+
+        function populateYearFilter() {
+            const yearSelect = document.getElementById('year-filter');
+            const years = entryFilter.getAvailableYears();
+            
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+        }
+
+        function clearFilters() {
+            document.getElementById('year-filter').value = '';
+            document.getElementById('month-filter').value = '';
+            document.getElementById('search-input').value = '';
+            applyFilters();
+        }
         
-        // Contador de entradas (integrando EntryCounter)
+        // Contador de entradas
         function updateStats() {
-            // Total de entradas
             document.getElementById('total-entries').textContent = entries.length;
             
-            // Entradas del mes actual
             const now = new Date();
             const currentMonth = entries.filter(entry => {
                 const entryDate = new Date(entry.date);
@@ -259,7 +546,6 @@
             }).length;
             document.getElementById('current-month').textContent = currentMonth;
             
-            // Fecha de primera entrada
             if (entries.length > 0) {
                 const dates = entries.map(e => new Date(e.date));
                 const firstDate = new Date(Math.min(...dates));
@@ -268,13 +554,21 @@
             }
         }
         
+        // Inicializar
+        populateYearFilter();
         updateStats();
+        renderEntries(entries);
         
-        // Inicializar tema
+        // Event listeners
+        document.getElementById('year-filter').addEventListener('change', applyFilters);
+        document.getElementById('month-filter').addEventListener('change', applyFilters);
+        document.getElementById('search-input').addEventListener('input', applyFilters);
+        document.getElementById('clear-filters').addEventListener('click', clearFilters);
+        
+        // Tema
         const themeManager = new ThemeManager();
         themeManager.applyTheme(themeManager.getCurrentTheme());
         
-        // Configurar botón de tema
         const themeToggle = document.getElementById('theme-toggle');
         function updateThemeButton() {
             const isDark = themeManager.getCurrentTheme() === 'dark';
