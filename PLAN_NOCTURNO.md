@@ -24,10 +24,10 @@ margarita-diario/
 2. [x] Botón para cambiar entre temas
 3. [x] Tests unitarios para el switcher de temas
 
-### Fase 2 - Noche 2  
-4. [ ] Filtro de entradas por fecha/mes
-5. [ ] Buscador de entradas
-6. [ ] Tests para filtros y búsqueda
+### Fase 2 - Noche 2 (05 feb) ✅ COMPLETADO
+4. [x] Filtro de entradas por fecha/mes/año (EntryFilter)
+5. [x] Buscador de entradas con resaltado (EntrySearch)
+6. [x] Tests para filtros y búsqueda (35 tests pasando)
 
 ### Fase 3 - Noche 3
 7. [ ] Contador de palabras totales
