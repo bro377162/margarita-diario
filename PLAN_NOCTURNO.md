@@ -19,10 +19,10 @@ margarita-diario/
 
 ## Funcionalidades a implementar (priorizadas):
 
-### Fase 1 - Noche 1 (03 feb)
-1. [ ] Sistema de temas (claro/oscuro)
-2. [ ] Botón para cambiar entre temas
-3. [ ] Tests unitarios para el switcher de temas
+### Fase 1 - Noche 1 (03 feb) ✅ COMPLETADO
+1. [x] Sistema de temas (claro/oscuro)
+2. [x] Botón para cambiar entre temas
+3. [x] Tests unitarios para el switcher de temas
 
 ### Fase 2 - Noche 2  
 4. [ ] Filtro de entradas por fecha/mes
